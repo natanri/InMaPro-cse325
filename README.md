@@ -1,4 +1,6 @@
 # InMaPro-cse325
+#Name of participants: Jhonatan Rios
+
 # 🧰 Inventory Manager - ASP.NET Core MVC
 
 A web application built with **ASP.NET Core MVC** to manage products, categories, and stock levels.  
