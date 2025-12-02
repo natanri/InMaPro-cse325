@@ -1,0 +1,55 @@
+﻿@page "/inventory"
+@using Microsoft.EntityFrameworkCore
+@namespace InMaPro_cse325.Components.Pages
+@using InMaPro_cse325.Data
+@using InMaPro_cse325.Models
+@inject AppDbContext Db
+@inject NavigationManager Nav
+
+<PageTitle>Inventory</PageTitle>
+
+<h3>Inventory Items</h3>
+
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (!items.Any())
+{
+    <p>No items in inventory.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Price</td>
+                    <td>
+                        <button @onclick="@(() => Nav.NavigateTo($"/inventory/detail/{item.Id}"))">Details</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<InventoryItem>? items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await Db.InventoryItems.ToListAsync();
+    }
+}

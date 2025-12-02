@@ -1,0 +1,7 @@
+C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro-cse325.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro-cse325.AssemblyInfoInputs.cache
+C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro-cse325.AssemblyInfo.cs
+C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro-cse325.csproj.CoreCompileInputs.cache
+C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro-cse325.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro-cse325.csproj.AssemblyReference.cache

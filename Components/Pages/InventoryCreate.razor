@@ -1,0 +1,23 @@
+@page "/inventory/create"
+
+@using InMaPro_cse325.Data
+@using InMaPro_cse325.Models
+@inject AppDbContext Db
+@inject NavigationManager Nav
+
+<PageTitle>Create Inventory Item</PageTitle>
+
+<h3>Create Item</h3>
+
+<InventoryForm Model="@item" OnValidSubmit="@Save" />
+
+@code {
+    private InventoryItem item = new();
+
+    private async Task Save()
+    {
+        Db.InventoryItems.Add(item);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/inventory");
+    }
+}

@@ -1,0 +1,34 @@
+﻿@page "/inventory/detail/{id:int}"
+@namespace InMaPro_cse325.Components.Pages
+@using InMaPro_cse325.Data
+@using InMaPro_cse325.Models
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Db
+
+<PageTitle>Inventory Detail</PageTitle>
+
+<h3>Inventory Detail</h3>
+
+@if (item == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <p><strong>Name:</strong> @item.Name</p>
+        <p><strong>Description:</strong> @item.Description</p>
+        <p><strong>Quantity:</strong> @item.Quantity</p>
+        <p><strong>Price:</strong> @item.Price</p>
+    </div>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    private InventoryItem? item;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await Db.InventoryItems.FirstOrDefaultAsync(i => i.Id == id);
+    }
+}

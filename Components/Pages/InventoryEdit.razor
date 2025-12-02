@@ -1,0 +1,43 @@
+@page "/inventory/edit/{id:int}"
+
+@using InMaPro_cse325.Data
+@using InMaPro_cse325.Models
+
+@inject AppDbContext Db
+@inject NavigationManager Nav
+
+<PageTitle>Edit Item</PageTitle>
+
+<h3>Edit Item</h3>
+
+@if (item is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <input @bind="item.Name" placeholder="Name" />
+    <input @bind="item.Description" placeholder="Description" />
+    <input @bind="item.Quantity" type="number" />
+    <input @bind="item.Price" type="number" step="0.01" />
+
+    <button @onclick="Save">Save</button>
+}
+
+@code {
+    private InventoryItem? item;
+
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await Db.InventoryItems.FindAsync(id);
+    }
+
+    private async Task Save()
+    {
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/inventory");
+    }
+}
