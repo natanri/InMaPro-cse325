@@ -18,6 +18,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Registrar servicios personalizados
 builder.Services.AddScoped<DashboardService>();
 
+builder.Services.AddScoped<ExportService>();
+
+builder.Services.AddScoped<IExportService, ExportService>();
+builder.Services.AddScoped<DashboardService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 104857600; // 100MB
+});
+
 var app = builder.Build();
 
 // Configurar pipeline HTTP

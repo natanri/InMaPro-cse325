@@ -21,6 +21,10 @@
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
+      "Id": "C:\\Users\\Jhonatan\\Desktop\\miscellaneous\\BYU-IDAHO\\CSE325\\InMaPro_cse325\\wwwroot\\js\\fileDownload.js",
+      "PackagePath": "staticwebassets\\js\\fileDownload.js"
+    },
+    {
       "Id": "C:\\Users\\Jhonatan\\Desktop\\miscellaneous\\BYU-IDAHO\\CSE325\\InMaPro_cse325\\wwwroot\\site.css",
       "PackagePath": "staticwebassets\\site.css"
     },

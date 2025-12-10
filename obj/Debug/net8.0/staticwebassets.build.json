@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "EPnAYWOWx6AgmQ3ggxFNbwOtdeb0ADFHZuw/fAZvxIs=",
+  "Hash": "nDSw8Pl+N908cCckUbyqYeBrwHrAcTiIyFuRSIt7wKM=",
   "Source": "InMaPro_cse325",
   "BasePath": "_content/InMaPro_cse325",
   "Mode": "Default",
@@ -1269,6 +1269,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.png"
+    },
+    {
+      "Identity": "C:\\Users\\Jhonatan\\Desktop\\miscellaneous\\BYU-IDAHO\\CSE325\\InMaPro_cse325\\wwwroot\\js\\fileDownload.js",
+      "SourceId": "InMaPro_cse325",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Jhonatan\\Desktop\\miscellaneous\\BYU-IDAHO\\CSE325\\InMaPro_cse325\\wwwroot\\",
+      "BasePath": "_content/InMaPro_cse325",
+      "RelativePath": "js/fileDownload.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\fileDownload.js"
     },
     {
       "Identity": "C:\\Users\\Jhonatan\\Desktop\\miscellaneous\\BYU-IDAHO\\CSE325\\InMaPro_cse325\\wwwroot\\site.css",

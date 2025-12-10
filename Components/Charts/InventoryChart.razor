@@ -1,0 +1,231 @@
+@namespace InMaPro_cse325.Components.Charts
+@using InMaPro_cse325.Models
+@inject IJSRuntime JSRuntime
+
+<div class="card shadow h-100">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 fw-bold text-primary">
+            <i class="@Icon me-1"></i>@Title
+        </h6>
+        <div class="dropdown no-arrow">
+            <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="bi bi-three-dots-vertical text-gray-400"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow">
+                <a class="dropdown-item" href="#" @onclick="ExportChart">Exportar como imagen</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" @onclick="ToggleLegend">@(ShowLegend ? "Ocultar leyenda" : "Mostrar leyenda")</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="chart-area">
+            <canvas id="@ChartId"></canvas>
+        </div>
+        @if (ShowLegend && LegendItems.Any())
+        {
+            <div class="mt-4 text-center small">
+                @foreach (var item in LegendItems)
+                {
+                    <span class="me-3">
+                        <i class="bi bi-circle-fill" style="color: @item.Color"></i>
+                        @item.Label (@item.Value)
+                    </span>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string ChartId { get; set; } = "chart-" + Guid.NewGuid().ToString("N");
+    
+    [Parameter]
+    public string Title { get; set; } = "Gráfico";
+    
+    [Parameter]
+    public string Icon { get; set; } = "bi bi-bar-chart";
+    
+    [Parameter]
+    public ChartType Type { get; set; } = ChartType.Bar;
+    
+    [Parameter]
+    public List<ChartDataset> Datasets { get; set; } = new();
+    
+    [Parameter]
+    public List<string> Labels { get; set; } = new();
+    
+    [Parameter]
+    public bool ShowLegend { get; set; } = true;
+    
+    private List<LegendItem> LegendItems { get; set; } = new();
+    private bool isInitialized = false;
+    private DotNetObjectReference<InventoryChart>? dotNetHelper;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetHelper = DotNetObjectReference.Create(this);
+            await InitializeChart();
+        }
+        else if (isInitialized)
+        {
+            await UpdateChart();
+        }
+    }
+    
+    private async Task InitializeChart()
+    {
+        // Preparar datos para leyenda
+        PrepareLegend();
+        
+        // Configuración del gráfico
+        var config = new
+        {
+            type = Type.ToString().ToLower(),
+            data = new
+            {
+                labels = Labels.ToArray(),
+                datasets = Datasets.Select(d => new
+                {
+                    label = d.Label,
+                    data = d.Data.ToArray(),
+                    backgroundColor = d.BackgroundColor,
+                    borderColor = d.BorderColor,
+                    borderWidth = d.BorderWidth
+                }).ToArray()
+            },
+            options = new
+            {
+                responsive = true,
+                maintainAspectRatio = false,
+                plugins = new
+                {
+                    legend = new
+                    {
+                        display = ShowLegend,
+                        position = "top"
+                    },
+                    tooltip = new
+                    {
+                        mode = "index",
+                        intersect = false
+                    }
+                },
+                scales = Type == ChartType.Bar || Type == ChartType.Line ? new
+                {
+                    y = new
+                    {
+                        beginAtZero = true,
+                        ticks = new
+                        {
+                            callback = "function(value) { return '$' + value.toLocaleString(); }"
+                        }
+                    }
+                } : null
+            }
+        };
+        
+        await JSRuntime.InvokeVoidAsync("initializeChart", ChartId, config, dotNetHelper);
+        isInitialized = true;
+    }
+    
+    private async Task UpdateChart()
+    {
+        var data = new
+        {
+            labels = Labels.ToArray(),
+            datasets = Datasets.Select(d => new
+            {
+                label = d.Label,
+                data = d.Data.ToArray(),
+                backgroundColor = d.BackgroundColor,
+                borderColor = d.BorderColor
+            }).ToArray()
+        };
+        
+        await JSRuntime.InvokeVoidAsync("updateChart", ChartId, data);
+        PrepareLegend();
+    }
+    
+    private void PrepareLegend()
+    {
+        LegendItems.Clear();
+        
+        if (Datasets.Any() && Labels.Any())
+        {
+            for (int i = 0; i < Labels.Count; i++)
+            {
+                var color = Datasets.First().BackgroundColor[i % Datasets.First().BackgroundColor.Length];
+                var value = Datasets.First().Data.Count > i ? Datasets.First().Data[i] : 0;
+                
+                LegendItems.Add(new LegendItem
+                {
+                    Label = Labels[i],
+                    Value = value,
+                    Color = color
+                });
+            }
+        }
+    }
+    
+    private async Task ExportChart()
+    {
+        await JSRuntime.InvokeVoidAsync("exportChartAsImage", ChartId, $"{Title.ToLower().Replace(" ", "_")}_{DateTime.Now:yyyyMMdd}.png");
+    }
+    
+    private void ToggleLegend()
+    {
+        ShowLegend = !ShowLegend;
+        StateHasChanged();
+    }
+    
+    [JSInvokable]
+    public async Task OnChartClick(int datasetIndex, int index)
+    {
+        // Puedes manejar clicks en el gráfico aquí
+        Console.WriteLine($"Clicked: Dataset {datasetIndex}, Index {index}");
+        
+        // Ejemplo: Navegar a detalles
+        // Navigation.NavigateTo($"/inventory?category={Labels[index]}");
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (dotNetHelper != null)
+        {
+            dotNetHelper.Dispose();
+        }
+        
+        if (isInitialized)
+        {
+            await JSRuntime.InvokeVoidAsync("destroyChart", ChartId);
+        }
+    }
+    
+    public class ChartDataset
+    {
+        public string Label { get; set; } = "";
+        public List<decimal> Data { get; set; } = new();
+        public string[] BackgroundColor { get; set; } = Array.Empty<string>();
+        public string[] BorderColor { get; set; } = Array.Empty<string>();
+        public int BorderWidth { get; set; } = 1;
+    }
+    
+    public class LegendItem
+    {
+        public string Label { get; set; } = "";
+        public decimal Value { get; set; }
+        public string Color { get; set; } = "#000000";
+    }
+    
+    public enum ChartType
+    {
+        Bar,
+        Line,
+        Pie,
+        Doughnut
+    }
+}

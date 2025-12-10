@@ -1,10 +1,3 @@
-C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro_cse325.csproj.AssemblyReference.cache
-C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\rpswa.dswa.cache.json
-C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro_cse325.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro_cse325.AssemblyInfoInputs.cache
-C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro_cse325.AssemblyInfo.cs
-C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro_cse325.csproj.CoreCompileInputs.cache
-C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro-cse325\obj\Debug\net8.0\InMaPro_cse325.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debug\net8.0\appsettings.json
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debug\net8.0\BlazorDebugProxy\BrowserDebugHost.dll
@@ -139,6 +132,7 @@ C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debu
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.InMaPro_cse325.props
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.InMaPro_cse325.props
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\scopedcss\Components\Layout\NavMenu.razor.rz.scp.css
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\scopedcss\Shared\MainLayout.razor.rz.scp.css
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\scopedcss\bundle\InMaPro_cse325.styles.css
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\scopedcss\projectbundle\InMaPro_cse325.bundle.scp.css
@@ -148,4 +142,3 @@ C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debu
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\InMaPro_cse325.pdb
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\InMaPro_cse325.genruntimeconfig.cache
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\ref\InMaPro_cse325.dll
-C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\scopedcss\Components\Layout\NavMenu.razor.rz.scp.css
