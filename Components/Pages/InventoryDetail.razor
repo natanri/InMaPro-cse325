@@ -1,34 +1,61 @@
-﻿@page "/inventory/detail/{id:int}"
-@namespace InMaPro_cse325.Components.Pages
-@using InMaPro_cse325.Data
+﻿@page "/inventorydetail/{id:int}"
+@using Microsoft.AspNetCore.Authorization
 @using InMaPro_cse325.Models
-@using Microsoft.EntityFrameworkCore
-@inject AppDbContext Db
+@using InMaPro_cse325.Data
+@attribute [Authorize]
 
-<PageTitle>Inventory Detail</PageTitle>
-
-<h3>Inventory Detail</h3>
+<PageTitle>Detalles del Item</PageTitle>
 
 @if (item == null)
 {
-    <p><em>Loading...</em></p>
+    <p>Cargando...</p>
 }
 else
 {
-    <div>
-        <p><strong>Name:</strong> @item.Name</p>
-        <p><strong>Description:</strong> @item.Description</p>
-        <p><strong>Quantity:</strong> @item.Quantity</p>
-        <p><strong>Price:</strong> @item.Price</p>
-    </div>
+    <h3>@item.Name</h3>
+    
+    <dl class="row">
+        <dt class="col-sm-3">Descripción:</dt>
+        <dd class="col-sm-9">@item.Description</dd>
+        
+        <dt class="col-sm-3">Precio:</dt>
+        <dd class="col-sm-9">@item.Price.ToString("C")</dd>
+        
+        <dt class="col-sm-3">Cantidad en Stock:</dt>
+        <dd class="col-sm-9">
+            <span class="badge @(item.Quantity < 10 ? "bg-danger" : "bg-success")">
+                @item.Quantity
+            </span>
+        </dd>
+        
+        <dt class="col-sm-3">Categoría:</dt>
+        <dd class="col-sm-9">@item.Category</dd>
+        
+        <dt class="col-sm-3">Valor Total:</dt>
+        <dd class="col-sm-9">@((item.Price * item.Quantity).ToString("C"))</dd>
+        
+        <dt class="col-sm-3">Fecha Creación:</dt>
+        <dd class="col-sm-9">@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+    </dl>
+    
+    <a href="/inventorylist" class="btn btn-secondary">Volver</a>
+    <a href="/inventoryedit/@item.Id" class="btn btn-warning">Editar</a>
 }
 
 @code {
-    [Parameter] public int id { get; set; }
+    [Parameter]
+    public int Id { get; set; }
+    
     private InventoryItem? item;
-
+    
+    [Inject]
+    private AppDbContext? Context { get; set; }
+    
     protected override async Task OnInitializedAsync()
     {
-        item = await Db.InventoryItems.FirstOrDefaultAsync(i => i.Id == id);
+        if (Context != null)
+        {
+            item = await Context.InventoryItems.FindAsync(Id);
+        }
     }
 }

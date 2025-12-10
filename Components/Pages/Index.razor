@@ -1,0 +1,169 @@
+﻿@page "/"
+@namespace InMaPro_cse325.Components.Pages
+
+@using InMaPro_cse325.Models
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Context
+
+<PageTitle>Dashboard</PageTitle>
+
+<h1>Dashboard de Inventario</h1>
+
+@if (loading)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">@totalItems</h5>
+                    <p class="card-text">Total de Unidades</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">@lowStockItems</h5>
+                    <p class="card-text">Items con Bajo Stock</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">@totalCategories</h5>
+                    <p class="card-text">Categorías</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">@totalValue.ToString("C")</h5>
+                    <p class="card-text">Valor Total</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Items Recientes</h5>
+                </div>
+                <div class="card-body">
+                    @if (recentItems.Any())
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio</th>
+                                    <th>Categoría</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in recentItems)
+                                {
+                                    <tr>
+                                        <td>@item.Name</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@item.Price.ToString("C")</td>
+                                        <td>@item.Category?.Name</td>
+                                        <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No hay items</p>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Acciones Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/inventory/create" class="btn btn-primary">Nuevo Item</a>
+                        <a href="/inventory" class="btn btn-secondary">Ver Inventario</a>
+                        <a href="/add-item" class="btn btn-success">Agregar Rápido</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool loading = true;
+    private int totalItems = 0;
+    private int lowStockItems = 0;
+    private int totalCategories = 0;
+    private decimal totalValue = 0;
+    private List<InventoryItem> recentItems = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Obtener estadísticas - CORREGIDO
+            
+            // 1. Total de unidades (usar SumAsync con conversión)
+            totalItems = await Context.InventoryItems
+                .SumAsync(i => (int?)i.Quantity) ?? 0;
+            
+            // 2. Items con bajo stock
+            lowStockItems = await Context.InventoryItems
+                .Where(i => i.Quantity < 10)
+                .CountAsync();
+            
+            // 3. Total de categorías
+            totalCategories = await Context.Categories.CountAsync();
+            
+            // 4. Valor total - CORRECCIÓN IMPORTANTE
+            // Opción A: Traer todos los items y calcular en memoria
+            var items = await Context.InventoryItems
+                .Select(i => new { i.Quantity, i.Price })
+                .ToListAsync();
+            
+            totalValue = items.Sum(i => i.Quantity * i.Price);
+            
+            // Opción B: Si quieres usar SumAsync, convierte a double
+            // totalValue = (decimal)(await Context.InventoryItems
+            //     .SumAsync(i => (double?)(i.Quantity * i.Price)) ?? 0);
+            
+            // 5. Items recientes
+            recentItems = await Context.InventoryItems
+                .Include(i => i.Category)
+                .OrderByDescending(i => i.CreatedAt)
+                .Take(5)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error cargando dashboard: {ex.Message}");
+            // Puedes agregar un manejo de errores más específico aquí
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}

@@ -1,17 +1,24 @@
-namespace InMaPro_cse325.Data;
-
-using InMaPro_cse325.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using InMaPro_cse325.Models;
 
-
-
-
-public class AppDbContext : DbContext
+namespace InMaPro_cse325.Data
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options)
+    public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
-    }
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+        }
 
-    public DbSet<InventoryItem> InventoryItems { get; set; }
+        public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
+        public DbSet<Category> Categories => Set<Category>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            
+            // Configuraciones adicionales si las necesitas
+        }
+    }
 }

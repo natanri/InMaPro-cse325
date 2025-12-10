@@ -1,26 +1,5 @@
-@using InMaPro_cse325.Models
-@namespace InMaPro_cse325.Components.Pages
+@* Components/InventoryForm.razor *@
+@namespace InMaPro_cse325.Components
 
-<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <label>Nombre:</label>
-    <InputText @bind-Value="Model.Name" />
-
-    <label>Categoría:</label>
-    <InputText @bind-Value="Model.Category" />
-
-    <label>Cantidad:</label>
-    <InputNumber @bind-Value="Model.Quantity" />
-
-    <label>Costo:</label>
-    <InputNumber @bind-Value="Model.Cost" />
-
-    <button type="submit">Guardar</button>
-</EditForm>
-
-@code {
-    [Parameter] public InventoryItem Model { get; set; } = new();
-    [Parameter] public EventCallback OnValidSubmit { get; set; }
-}
+<h3>Formulario de Inventario</h3>
+<!-- Aquí va el contenido de tu formulario -->

@@ -1,25 +1,27 @@
-@{
-    Layout = null;
-}
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>InMaPro</title>
-
-    <link href="bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="css/site.css" rel="stylesheet" />
+    <base href="~/" />
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="InMaPro_cse325.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="Components/Layout/NavMenu.razor.css" asp-append-version="true" />
+    <link rel="stylesheet" href="Shared/MainLayout.razor.css" asp-append-version="true" />
 </head>
-
 <body>
     <div id="app">
-        @(await Html.RenderComponentAsync<InMaPro_cse325.Components.App>(RenderMode.ServerPrerendered))
+        @RenderBody()
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
     </div>
 
     <script src="_framework/blazor.server.js"></script>
 </body>
-
 </html>

@@ -1,32 +1,28 @@
 ﻿@page "/inventory"
-@using Microsoft.EntityFrameworkCore
 @namespace InMaPro_cse325.Components.Pages
-@using InMaPro_cse325.Data
-@using InMaPro_cse325.Models
-@inject AppDbContext Db
-@inject NavigationManager Nav
 
-<PageTitle>Inventory</PageTitle>
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Context
 
-<h3>Inventory Items</h3>
+<PageTitle>Inventario</PageTitle>
+
+<h1>Lista de Inventario</h1>
 
 @if (items == null)
 {
-    <p><em>Loading...</em></p>
-}
-else if (!items.Any())
-{
-    <p>No items in inventory.</p>
+    <p><em>Cargando...</em></p>
 }
 else
 {
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th></th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -34,10 +30,14 @@ else
             {
                 <tr>
                     <td>@item.Name</td>
+                    <td>@item.Description</td>
                     <td>@item.Quantity</td>
-                    <td>@item.Price</td>
+                    <td>@item.Price.ToString("C")</td>
+                    <td>@item.Category?.Name</td>
                     <td>
-                        <button @onclick="@(() => Nav.NavigateTo($"/inventory/detail/{item.Id}"))">Details</button>
+                        <a href="/inventory/edit/@item.Id" class="btn btn-sm btn-primary">Editar</a>
+                        <a href="/inventory/detail/@item.Id" class="btn btn-sm btn-info">Detalles</a>
+                        <button @onclick="@(() => DeleteItem(item.Id))" class="btn btn-sm btn-danger">Eliminar</button>
                     </td>
                 </tr>
             }
@@ -45,11 +45,28 @@ else
     </table>
 }
 
+<a href="/inventory/create" class="btn btn-success">Nuevo Item</a>
+
 @code {
     private List<InventoryItem>? items;
-
+    
     protected override async Task OnInitializedAsync()
     {
-        items = await Db.InventoryItems.ToListAsync();
+        items = await Context.InventoryItems
+            .Include(i => i.Category)
+            .ToListAsync();
+    }
+    
+    private async Task DeleteItem(int id)
+    {
+        var item = await Context.InventoryItems.FindAsync(id);
+        if (item != null)
+        {
+            Context.InventoryItems.Remove(item);
+            await Context.SaveChangesAsync();
+            items = await Context.InventoryItems
+                .Include(i => i.Category)
+                .ToListAsync();
+        }
     }
 }

@@ -1,23 +1,57 @@
 using InMaPro_cse325.Data;
+using InMaPro_cse325.Services;
 using Microsoft.EntityFrameworkCore;
-using InMaPro_cse325.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// EF Core con SQLite (estable para .NET 8)
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=inmapro.db"));
-
+// Agregar servicios de componentes Razor
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Configurar base de datos
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? "Data Source=inmapro.db";
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(connectionString));
+
+// Registrar servicios personalizados
+builder.Services.AddScoped<DashboardService>();
+
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+// Configurar pipeline HTTP
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
+// Mapear componentes Razor - usa el tipo correcto para tu componente raíz
+app.MapRazorComponents<InMaPro_cse325.Components.App>()  // ¡CORREGIDO!
     .AddInteractiveServerRenderMode();
+
+// Inicializar base de datos
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        context.Database.EnsureCreated();
+        
+        // Inicializar datos
+        SeedData.Initialize(context);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Error inicializando base de datos");
+    }
+}
 
 app.Run();
