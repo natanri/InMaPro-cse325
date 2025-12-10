@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\InMaPro_cse325.props" />
+</Project>

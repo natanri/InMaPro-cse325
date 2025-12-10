@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\InMaPro_cse325.props" />
+</Project>
