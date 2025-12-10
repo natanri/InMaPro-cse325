@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InMaPro_cse325")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fdc9caffa697acf6cd6b07c5b8ed9d9e366be189")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+800c9557a5b4c1010cea72bb2e2a9c2be3e83ee7")]
 [assembly: System.Reflection.AssemblyProductAttribute("InMaPro_cse325")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InMaPro_cse325")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

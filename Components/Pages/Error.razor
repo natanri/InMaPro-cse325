@@ -1,0 +1,156 @@
+@page "/Error/{StatusCode:int}"
+@namespace InMaPro_cse325.Components.Pages
+
+<PageTitle>Error @StatusCode</PageTitle>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            @if (StatusCode == 404)
+            {
+                <div class="error-icon mb-4">
+                    <i class="bi bi-exclamation-octagon display-1 text-warning"></i>
+                </div>
+                <h1 class="display-4 fw-bold text-warning">404</h1>
+                <h2 class="mb-4">Página No Encontrada</h2>
+                <p class="lead mb-4">
+                    Lo sentimos, la página que estás buscando no existe o ha sido movida.
+                </p>
+            }
+            else if (StatusCode == 500)
+            {
+                <div class="error-icon mb-4">
+                    <i class="bi bi-bug display-1 text-danger"></i>
+                </div>
+                <h1 class="display-4 fw-bold text-danger">500</h1>
+                <h2 class="mb-4">Error del Servidor</h2>
+                <p class="lead mb-4">
+                    Ocurrió un error interno en el servidor. Nuestro equipo ha sido notificado.
+                </p>
+            }
+            else
+            {
+                <div class="error-icon mb-4">
+                    <i class="bi bi-exclamation-triangle display-1 text-primary"></i>
+                </div>
+                <h1 class="display-4 fw-bold text-primary">Error @StatusCode</h1>
+                <h2 class="mb-4">Algo salió mal</h2>
+                <p class="lead mb-4">
+                    Ocurrió un error inesperado en la aplicación.
+                </p>
+            }
+            
+            <div class="mt-5">
+                <p class="text-muted mb-4">
+                    @GetErrorMessage()
+                </p>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="/" class="btn btn-primary btn-lg px-4 me-md-2">
+                        <i class="bi bi-house-door me-2"></i>Ir al Inicio
+                    </a>
+                    <a href="/inventory" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="bi bi-box-seam me-2"></i>Ver Inventario
+                    </a>
+                    <button class="btn btn-outline-info btn-lg px-4" @onclick="GoBack">
+                        <i class="bi bi-arrow-left me-2"></i>Volver Atrás
+                    </button>
+                </div>
+                
+                @if (showDeveloperInfo)
+                {
+                    <div class="card mt-5 border-warning">
+                        <div class="card-header bg-warning text-dark">
+                            <i class="bi bi-tools me-2"></i>Información para Desarrolladores
+                        </div>
+                        <div class="card-body text-start">
+                            <p><strong>Error:</strong> @errorMessage</p>
+                            <p><strong>StackTrace:</strong></p>
+                            <pre class="bg-light p-3 rounded small">@stackTrace</pre>
+                            
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-outline-warning" @onclick="CopyErrorInfo">
+                                    <i class="bi bi-clipboard me-1"></i>Copiar Información del Error
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int StatusCode { get; set; }
+    
+    [Inject]
+    private NavigationManager Navigation { get; set; } = null!;
+    
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = null!;
+    
+    private string errorMessage = "";
+    private string stackTrace = "";
+    private bool showDeveloperInfo = false;
+    
+    protected override void OnInitialized()
+    {
+        // En desarrollo, mostrar más información
+        showDeveloperInfo = true; // En producción cambiar a false
+        
+        SetErrorMessage();
+    }
+    
+    private void SetErrorMessage()
+    {
+        errorMessage = StatusCode switch
+        {
+            400 => "Solicitud incorrecta. Verifica los datos enviados.",
+            401 => "No autorizado. Debes iniciar sesión para acceder a esta página.",
+            403 => "Prohibido. No tienes permiso para acceder a este recurso.",
+            404 => "La página solicitada no existe o ha sido movida.",
+            500 => "Error interno del servidor. Por favor, inténtalo de nuevo más tarde.",
+            503 => "Servicio no disponible. Estamos realizando mantenimiento.",
+            _ => $"Error HTTP {StatusCode}. Ocurrió un problema inesperado."
+        };
+        
+        // Simular stack trace (en una app real vendría del error)
+        stackTrace = $"System.Exception: {errorMessage}\n" +
+                    $"   at InMaPro_cse325.Components.Pages.Error.OnInitialized()\n" +
+                    $"   at Microsoft.AspNetCore.Components.ComponentBase.RunInitAndSetParametersAsync()\n" +
+                    $"   at {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+    }
+    
+    private string GetErrorMessage()
+    {
+        return StatusCode switch
+        {
+            404 => "Puede que hayas escrito mal la dirección o la página haya sido movida.",
+            500 => "Nuestro equipo técnico ha sido notificado y está trabajando en la solución.",
+            _ => "Por favor, intenta nuevamente o contacta al soporte si el problema persiste."
+        };
+    }
+    
+    private void GoBack()
+    {
+        Navigation.NavigateTo(Navigation.Uri);
+    }
+    
+    private async Task CopyErrorInfo()
+    {
+        var errorInfo = $"Error {StatusCode}: {errorMessage}\n\nStackTrace:\n{stackTrace}";
+        
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", errorInfo);
+            await JSRuntime.InvokeVoidAsync("showToast", "success", "Copiado", 
+                "Información del error copiada al portapapeles");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error copiando al portapapeles: {ex.Message}");
+        }
+    }
+}

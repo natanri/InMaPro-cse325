@@ -1,0 +1,110 @@
+@namespace InMaPro_cse325.Components
+
+@if (Visible)
+{
+    <div class="@GetContainerClass()">
+        <div class="@GetSpinnerClass()" role="status">
+            <span class="visually-hidden">@Text</span>
+        </div>
+        @if (!string.IsNullOrEmpty(Text))
+        {
+            <div class="mt-2">
+                <p class="text-muted mb-0">@Text</p>
+                @if (!string.IsNullOrEmpty(SubText))
+                {
+                    <p class="text-muted small">@SubText</p>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool Visible { get; set; } = true;
+    
+    [Parameter]
+    public string Text { get; set; } = "Cargando...";
+    
+    [Parameter]
+    public string SubText { get; set; } = "";
+    
+    [Parameter]
+    public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
+    
+    [Parameter]
+    public SpinnerType Type { get; set; } = SpinnerType.Border;
+    
+    [Parameter]
+    public string Color { get; set; } = "primary";
+    
+    [Parameter]
+    public bool Center { get; set; } = true;
+    
+    [Parameter]
+    public bool FullScreen { get; set; } = false;
+    
+    private string GetContainerClass()
+    {
+        var classes = new List<string>();
+        
+        if (FullScreen)
+        {
+            classes.Add("position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center");
+            classes.Add("bg-light bg-opacity-75");
+            classes.Add("z-index-1050");
+        }
+        else if (Center)
+        {
+            classes.Add("d-flex flex-column align-items-center justify-content-center");
+            classes.Add("py-5");
+        }
+        else
+        {
+            classes.Add("d-inline-block");
+        }
+        
+        return string.Join(" ", classes);
+    }
+    
+    private string GetSpinnerClass()
+    {
+        var classes = new List<string>();
+        
+        if (Type == SpinnerType.Border)
+        {
+            classes.Add("spinner-border");
+        }
+        else
+        {
+            classes.Add("spinner-grow");
+        }
+        
+        classes.Add($"text-{Color}");
+        
+        switch (Size)
+        {
+            case SpinnerSize.Small:
+                classes.Add("spinner-border-sm");
+                break;
+            case SpinnerSize.Large:
+                classes.Add(FullScreen ? "spinner-border-lg" : "");
+                break;
+        }
+        
+        return string.Join(" ", classes.Where(c => !string.IsNullOrEmpty(c)));
+    }
+    
+    public enum SpinnerSize
+    {
+        Small,
+        Medium,
+        Large
+    }
+    
+    public enum SpinnerType
+    {
+        Border,
+        Grow
+    }
+}

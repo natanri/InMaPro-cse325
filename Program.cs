@@ -33,16 +33,28 @@ var app = builder.Build();
 // Configurar pipeline HTTP
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Error/500");
     app.UseHsts();
+}
+else
+{
+    app.UseDeveloperExceptionPage(); 
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+app.UseStatusCodePages(async context =>
+{
+    if (context.HttpContext.Response.StatusCode == 404)
+    {
+        context.HttpContext.Response.Redirect($"/Error/404");
+    }
+});
+
 // Mapear componentes Razor - usa el tipo correcto para tu componente raíz
-app.MapRazorComponents<InMaPro_cse325.Components.App>()  // ¡CORREGIDO!
+app.MapRazorComponents<InMaPro_cse325.Components.App>() 
     .AddInteractiveServerRenderMode();
 
 // Inicializar base de datos

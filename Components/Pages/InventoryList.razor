@@ -2,8 +2,11 @@
 @namespace InMaPro_cse325.Components.Pages
 
 @using Microsoft.EntityFrameworkCore
+@using InMaPro_cse325.Services
 @inject AppDbContext Context
 @inject NavigationManager Navigation
+@inject IExportService ExportService
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Inventario</PageTitle>
 
@@ -20,11 +23,11 @@
         </a>
     </div>
 
-    <!-- Panel de Filtros SIMPLIFICADO -->
+    <!-- Panel de Filtros -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">
                         <i class="bi bi-search me-1"></i>Buscar
                     </label>
@@ -33,7 +36,7 @@
                            @bind="searchTerm" @bind:event="oninput" />
                 </div>
                 
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <label class="form-label">
                         <i class="bi bi-filter me-1"></i>Categoría
                     </label>
@@ -45,29 +48,73 @@
                         }
                     </select>
                 </div>
+                
+                <div class="col-md-3">
+                    <label class="form-label">
+                        <i class="bi bi-sort-down me-1"></i>Ordenar por
+                    </label>
+                    <select class="form-control" @bind="sortBy" @bind:event="onchange">
+                        <option value="name">Nombre (A-Z)</option>
+                        <option value="name_desc">Nombre (Z-A)</option>
+                        <option value="quantity">Cantidad (Menor a Mayor)</option>
+                        <option value="quantity_desc">Cantidad (Mayor a Menor)</option>
+                        <option value="price">Precio (Menor a Mayor)</option>
+                        <option value="price_desc">Precio (Mayor a Menor)</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-outline-secondary w-100" @onclick="ResetFilters">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Limpiar
+                    </button>
+                </div>
             </div>
             
+            <!-- Filtros de Stock -->
             <div class="row mt-3">
                 <div class="col-md-12">
-                    <button class="btn btn-outline-secondary btn-sm" @onclick="ResetFilters">
-                        <i class="bi bi-arrow-clockwise me-1"></i>Limpiar Filtros
-                    </button>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" 
+                               id="lowStock" @bind="showLowStock" />
+                        <label class="form-check-label" for="lowStock">
+                            <span class="badge bg-warning">Bajo Stock</span> (menos de 10 unidades)
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" 
+                               id="outOfStock" @bind="showOutOfStock" />
+                        <label class="form-check-label" for="outOfStock">
+                            <span class="badge bg-danger">Agotado</span> (0 unidades)
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Tabla de Inventario SIMPLIFICADA -->
+    <!-- Tabla de Inventario -->
     <div class="card shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
             <h6 class="m-0 fw-bold">
                 <i class="bi bi-table me-1"></i>Lista de Productos
             </h6>
             
-            <div>
+            <div class="btn-group" role="group">
                 <button type="button" class="btn btn-outline-primary btn-sm" 
-                        @onclick="ExportToCsv" title="Exportar a CSV">
-                    <i class="bi bi-file-earmark-spreadsheet"></i> Exportar
+                        @onclick="ExportToCsv" 
+                        title="Exportar a CSV"
+                        disabled="@isExporting">
+                    @if (isExporting)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        <span class="ms-1">Exportando...</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-file-earmark-spreadsheet"></i>
+                        <span class="ms-1">Exportar CSV</span>
+                    }
                 </button>
             </div>
         </div>
@@ -75,12 +122,13 @@
         <div class="card-body">
             @if (loading)
             {
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                    <p class="mt-3 text-muted">Cargando inventario...</p>
-                </div>
+                <LoadingSpinner 
+                    Visible="true"
+                    Text="Cargando inventario..."
+                    SubText="Por favor, espera un momento"
+                    Size="LoadingSpinner.SpinnerSize.Large"
+                    Center="true"
+                    FullScreen="false" />
             }
             else if (!filteredItems.Any())
             {
@@ -173,6 +221,12 @@
                             <tr>
                                 <td colspan="6" class="text-muted small">
                                     Mostrando @filteredItems.Count de @allItems.Count productos
+                                    @if (!string.IsNullOrEmpty(searchTerm) || selectedCategoryId > 0)
+                                    {
+                                        <span class="ms-2">
+                                            <i class="bi bi-funnel"></i> Filtros aplicados
+                                        </span>
+                                    }
                                 </td>
                             </tr>
                         </tfoot>
@@ -185,13 +239,17 @@
 
 @code {
     private bool loading = true;
+    private bool isExporting = false;
     private List<InventoryItem> allItems = new();
     private List<InventoryItem> filteredItems = new();
     private List<Category> categories = new();
     
-    // Filtros SIMPLIFICADOS
+    // Filtros
     private string searchTerm = "";
     private int selectedCategoryId = 0;
+    private string sortBy = "name";
+    private bool showLowStock = false;
+    private bool showOutOfStock = false;
     
     protected override async Task OnInitializedAsync()
     {
@@ -219,7 +277,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error cargando datos: {ex.Message}");
+            await ShowError("Error", $"Error cargando datos: {ex.Message}");
         }
         finally
         {
@@ -247,13 +305,36 @@
             query = query.Where(i => i.CategoryId == selectedCategoryId);
         }
         
-        filteredItems = query.OrderBy(i => i.Name).ToList();
+        // Filtros de stock
+        if (showLowStock)
+        {
+            query = query.Where(i => i.Quantity < 10 && i.Quantity > 0);
+        }
+        
+        if (showOutOfStock)
+        {
+            query = query.Where(i => i.Quantity == 0);
+        }
+        
+        // Ordenamiento
+        filteredItems = sortBy switch
+        {
+            "name_desc" => query.OrderByDescending(i => i.Name).ToList(),
+            "quantity" => query.OrderBy(i => i.Quantity).ToList(),
+            "quantity_desc" => query.OrderByDescending(i => i.Quantity).ToList(),
+            "price" => query.OrderBy(i => i.Price).ToList(),
+            "price_desc" => query.OrderByDescending(i => i.Price).ToList(),
+            _ => query.OrderBy(i => i.Name).ToList()
+        };
     }
     
     private void ResetFilters()
     {
         searchTerm = "";
         selectedCategoryId = 0;
+        sortBy = "name";
+        showLowStock = false;
+        showOutOfStock = false;
         ApplyFilters();
     }
     
@@ -297,6 +378,12 @@
         if (selectedCategoryId > 0)
             return $"No hay productos en esta categoría";
         
+        if (showLowStock)
+            return "No hay productos con bajo stock";
+        
+        if (showOutOfStock)
+            return "No hay productos agotados";
+        
         return "No hay productos en el inventario";
     }
     
@@ -308,23 +395,50 @@
             Context.InventoryItems.Remove(item);
             await Context.SaveChangesAsync();
             await LoadData();
+            await ShowSuccess("Eliminado", "Producto eliminado correctamente");
         }
     }
     
     private async Task ExportToCsv()
     {
+        isExporting = true;
+        StateHasChanged();
+        
         try
         {
-            // Implementación básica de exportación
-            Console.WriteLine("Exportando a CSV...");
-            // Aquí iría la lógica de exportación real
-            await Task.CompletedTask; // Esto elimina el warning CS1998
+            // Generar CSV
+            var csvData = ExportService.ExportInventoryToCsv(filteredItems);
+            var fileName = ExportService.GetCsvFileName();
+            
+            // Descargar usando JavaScript
+            await JSRuntime.InvokeVoidAsync("downloadFileFromBytes", 
+                fileName, 
+                csvData, 
+                "text/csv;charset=utf-8");
+            
+            // Mostrar notificación de éxito
+            await ShowSuccess("Exportación Exitosa", 
+                $"Se descargó el archivo: {fileName}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error exportando CSV: {ex.Message}");
+            await ShowError("Error en Exportación", 
+                $"No se pudo exportar el archivo: {ex.Message}");
+        }
+        finally
+        {
+            isExporting = false;
+            StateHasChanged();
         }
     }
-
     
+    private async Task ShowSuccess(string title, string message)
+    {
+        await JSRuntime.InvokeVoidAsync("showToast", "success", title, message);
+    }
+    
+    private async Task ShowError(string title, string message)
+    {
+        await JSRuntime.InvokeVoidAsync("showToast", "danger", title, message);
+    }
 }
