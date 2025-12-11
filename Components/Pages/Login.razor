@@ -1,0 +1,29 @@
+@page "/login"
+@inject NavigationManager Navigation
+
+<PageTitle>Login - Inventory Manager</PageTitle>
+
+<div style="text-align: center; margin-top: 150px;">
+    <h2>🔐 Inventory Manager</h2>
+    <p class="mt-3">Sistema de Gestión de Inventarios</p>
+    
+    <div class="mt-5">
+        <!-- Botón que SÍ redirige sin autenticación compleja -->
+        <a href="/" class="btn btn-primary btn-lg">
+            <i class="bi bi-box-arrow-in-right"></i> 
+            Acceder al Dashboard
+        </a>
+    </div>
+    
+    <div class="mt-4 text-muted">
+        <small>Para esta demostración, el acceso es directo</small>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Redirige automáticamente después de 2 segundos
+        // Navigation.NavigateTo("/", forceLoad: true);
+    }
+}

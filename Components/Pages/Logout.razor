@@ -1,0 +1,11 @@
+@page "/logout"
+@inject DemoAuthStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+@code {
+    protected override void OnInitialized()
+    {
+        AuthStateProvider.Logout();
+        Navigation.NavigateTo("/login");
+    }
+}

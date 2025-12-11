@@ -20,7 +20,6 @@ C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debu
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debug\net8.0\Humanizer.dll
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debug\net8.0\Microsoft.AspNetCore.Components.WebAssembly.Server.dll
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
-C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.UI.dll
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debug\net8.0\Microsoft.CodeAnalysis.dll
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\bin\Debug\net8.0\Microsoft.CodeAnalysis.CSharp.dll
@@ -120,7 +119,6 @@ C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debu
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\InMaPro_cse325.AssemblyInfoInputs.cache
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\InMaPro_cse325.AssemblyInfo.cs
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\InMaPro_cse325.csproj.CoreCompileInputs.cache
-C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\InMaPro_cse325.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\InMaPro_cse325.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\InMaPro_cse325.RazorAssemblyInfo.cache
 C:\Users\Jhonatan\Desktop\miscellaneous\BYU-IDAHO\CSE325\InMaPro_cse325\obj\Debug\net8.0\InMaPro_cse325.RazorAssemblyInfo.cs

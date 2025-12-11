@@ -5,6 +5,9 @@
 @using InMaPro_cse325.Models
 @inject AppDbContext Context
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+@using Microsoft.AspNetCore.Authorization
 
 <PageTitle>Editar Item</PageTitle>
 
@@ -37,7 +40,7 @@
         <div class="row">
             <div class="col">
                 <div class="alert alert-warning">
-                    <i class="bi bi-exclamation-triangle"></i> No hay categorías disponibles. 
+                    <i class="bi bi-exclamation-triangle"></i> No hay categorías disponibles.
                     <a href="#" class="alert-link">Crear una categoría primero</a>.
                 </div>
             </div>
@@ -58,28 +61,28 @@
                             // Crear el nombre del formulario dinámicamente
                             var formName = $"edit_item_{Id}";
                         }
-                        
+
                         <EditForm Model="@item" OnValidSubmit="HandleValidSubmit" FormName="@formName">
                             <DataAnnotationsValidator />
+                            <input type="hidden" name="Id" value="@item.Id" />
                             <ValidationSummary class="alert alert-danger" />
-                            
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="name" class="form-label">
                                         <i class="bi bi-tag me-1"></i>Nombre *
                                     </label>
-                                    <InputText id="name" @bind-Value="item.Name" 
-                                               class="form-control" placeholder="Ej: Laptop HP" />
+                                    <InputText id="name" @bind-Value="item.Name" class="form-control"
+                                        placeholder="Ej: Laptop HP" />
                                     <ValidationMessage For="@(() => item.Name)" class="text-danger small" />
                                     <div class="form-text">Nombre descriptivo del producto.</div>
                                 </div>
-                                
+
                                 <div class="col-md-6 mb-3">
                                     <label for="category" class="form-label">
                                         <i class="bi bi-grid me-1"></i>Categoría *
                                     </label>
-                                    <InputSelect id="category" @bind-Value="item.CategoryId" 
-                                                 class="form-control">
+                                    <InputSelect id="category" @bind-Value="item.CategoryId" class="form-control">
                                         <option value="">Seleccionar categoría</option>
                                         @foreach (var category in categories)
                                         {
@@ -89,42 +92,40 @@
                                     <ValidationMessage For="@(() => item.CategoryId)" class="text-danger small" />
                                 </div>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="description" class="form-label">
                                     <i class="bi bi-text-paragraph me-1"></i>Descripción
                                 </label>
-                                <InputTextArea id="description" @bind-Value="item.Description" 
-                                               class="form-control" rows="3" 
-                                               placeholder="Descripción detallada del producto..." />
+                                <InputTextArea id="description" @bind-Value="item.Description" class="form-control" rows="3"
+                                    placeholder="Descripción detallada del producto..." />
                                 <ValidationMessage For="@(() => item.Description)" class="text-danger small" />
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="quantity" class="form-label">
                                         <i class="bi bi-box me-1"></i>Cantidad *
                                     </label>
-                                    <InputNumber id="quantity" @bind-Value="item.Quantity" 
-                                                 class="form-control" min="0" />
+                                    <InputNumber id="quantity" @bind-Value="item.Quantity" class="form-control" min="0" />
                                     <ValidationMessage For="@(() => item.Quantity)" class="text-danger small" />
                                     <div class="form-text">Cantidad disponible en inventario.</div>
                                 </div>
-                                
+
                                 <div class="col-md-6 mb-3">
                                     <label for="price" class="form-label">
                                         <i class="bi bi-currency-dollar me-1"></i>Precio
                                     </label>
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
-                                        <InputNumber id="price" @bind-Value="item.Price" 
-                                                     class="form-control" min="0" step="0.01" />
+                                        <InputNumber id="price" @bind-Value="item.Price" class="form-control" min="0"
+                                            step="0.01" />
                                     </div>
                                     <ValidationMessage For="@(() => item.Price)" class="text-danger small" />
                                     <div class="form-text">Precio unitario del producto.</div>
                                 </div>
                             </div>
-                            
+
                             <!-- Información del sistema -->
                             <div class="card bg-light mb-4">
                                 <div class="card-body">
@@ -138,7 +139,8 @@
                                         <div class="col-md-6">
                                             @if (item.UpdatedAt.HasValue)
                                             {
-                                                <p><strong>Última actualización:</strong> @item.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                                                <p><strong>Última actualización:</strong>
+                                                    @item.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</p>
                                             }
                                             else
                                             {
@@ -148,7 +150,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <button type="submit" class="btn btn-primary px-4" disabled="@isSaving">
@@ -178,7 +180,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Panel lateral -->
             <div class="col-lg-4">
                 <div class="card shadow-sm mb-3">
@@ -208,7 +210,7 @@
                         </ul>
                     </div>
                 </div>
-                
+
                 <div class="card shadow-sm">
                     <div class="card-header bg-light">
                         <h6 class="mb-0">
@@ -237,80 +239,93 @@
 @code {
     [Parameter]
     public int Id { get; set; }
-    
+
     private InventoryItem? item;
     private List<Category> categories = new List<Category>();
-    private bool isLoading = true;
+    //private bool isLoading = true;
     private bool isSaving = false;
-    
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
             // Cargar el item específico con su categoría
             item = await Context.InventoryItems
-                .Include(i => i.Category)
-                .FirstOrDefaultAsync(i => i.Id == Id);
-            
+            .Include(i => i.Category)
+            .FirstOrDefaultAsync(i => i.Id == Id);
+
             // Cargar todas las categorías para el dropdown
             categories = await Context.Categories
-                .OrderBy(c => c.Name)
-                .ToListAsync();
+            .OrderBy(c => c.Name)
+            .ToListAsync();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error cargando datos: {ex.Message}");
             // En una app real, podrías mostrar un mensaje de error al usuario
         }
-        finally
-        {
-            isLoading = false;
-        }
+       // finally
+        //{
+        //    isLoading = false;
+        //}
     }
-    
+
     private async Task HandleValidSubmit()
     {
         if (item == null) return;
         
         isSaving = true;
+        StateHasChanged(); // Actualiza la UI para mostrar el spinner
         
         try
         {
-            // Actualizar fecha de modificación
+            // PASO CLAVE: Re-attach y marcar el objeto como modificado
+            // Esto obliga a Entity Framework a detectar los cambios
+            Context.Attach(item).State = EntityState.Modified;
+            
+            // Actualizar la fecha de modificación
             item.UpdatedAt = DateTime.UtcNow;
             
-            // Guardar cambios
+            // Guardar cambios en la base de datos
             await Context.SaveChangesAsync();
             
-            // Mostrar mensaje de éxito
-            Console.WriteLine("Item actualizado exitosamente");
+            // Confirmación en consola (para depuración)
+            Console.WriteLine($"Item {item.Id} actualizado exitosamente");
             
-            // Redirigir
-            await Task.Delay(500);
-            Navigation.NavigateTo("/inventory");
+            // Redirigir al listado después de guardar
+            Navigation.NavigateTo("/inventory", forceLoad: true);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            // Manejo específico para conflictos de concurrencia
+            Console.WriteLine($"Error de concurrencia: {ex.Message}");
+            // Podrías mostrar un mensaje al usuario aquí
         }
         catch (Exception ex)
         {
+            // Manejo de otros errores
             Console.WriteLine($"Error guardando cambios: {ex.Message}");
-            // Podrías mostrar un mensaje de error al usuario aquí
+            // Considera mostrar un mensaje al usuario
         }
         finally
         {
             isSaving = false;
         }
     }
-    
     private void Cancel()
     {
         Navigation.NavigateTo("/inventory");
     }
-    
+
     private async Task DeleteItem()
     {
         if (item == null) return;
-        
-        // Confirmación simple (en una app real usarías JavaScript interop)
-        if (confirm("¿Estás seguro de eliminar este item?"))
+
+        // Usa IJSRuntime para confirmación real en el navegador
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
+        $"¿Estás seguro de eliminar '{item.Name}'?");
+
+        if (confirmed)
         {
             try
             {
@@ -321,10 +336,12 @@
             catch (Exception ex)
             {
                 Console.WriteLine($"Error eliminando item: {ex.Message}");
+                // Considera mostrar un mensaje al usuario
             }
         }
     }
-    
+
+
     // Método helper para confirmación
     private bool confirm(string message)
     {
