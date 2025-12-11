@@ -32,7 +32,6 @@ Includes user authentication, role-based access control (Admin / User), and a da
 | Technology | Description |
 |-------------|-------------|
 | **.NET 8 / 7** | Main framework |
-| **ASP.NET Core MVC** | Server-side architecture |
 | **Entity Framework Core** | ORM for database interaction |
 | **SQL Server / SQLite** | Database engine |
 | **ASP.NET Identity** | Authentication and role management |
